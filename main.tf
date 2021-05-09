@@ -10,6 +10,17 @@ resource "aws_s3_bucket" "ram-bucket-logs" {
     
 }
 
+resource "aws_s3_bucket" "ram-bucket-logs-1" {
+    bucket = "ancharamcharan-test-s3-bucket-logs-1"
+    acl = "log-delivery-write"
+
+    versioning {
+        enabled = true
+    }
+
+    
+}
+
 resource "aws_s3_bucket" "ram-bucket-1" {
     bucket = "ancharamcharan-test-s3-bucket"
     acl = "private"
@@ -59,6 +70,29 @@ resource "aws_s3_bucket_policy" "ram-bucket-logs-policy" {
         Resource = [
           aws_s3_bucket.ram-bucket-logs.arn,
           "${aws_s3_bucket.ram-bucket-logs.arn}/*",
+        ]
+      },
+    ]
+  })
+}
+
+resource "aws_s3_bucket_policy" "ram-bucket-logs-policy-1" {
+  bucket = aws_s3_bucket.ram-bucket-logs-1.id
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression's result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Id      = "MYBUCKETPOLICY1"
+    Statement = [
+      {
+        Sid       = "allow-read-write-logs-1"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.ram-bucket-logs-1.arn,
+          "${aws_s3_bucket.ram-bucket-logs-1.arn}/*",
         ]
       },
     ]
